@@ -1,0 +1,13 @@
+/* general styling */
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* header */
+header {
+    color: white;
+    background: linear-gradient(to right, royalblue, midnightblue);
+    height: auto;
+    text-align: center;
+    padding: 5px;
+}
