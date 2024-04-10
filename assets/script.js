@@ -2,6 +2,7 @@
 const cityInput = $("#city");
 const searchBtn = $("button");
 const searchResults = $("#search-results");
+const weather = $("section")
 
 // retrieve cities from localStorage
 let searchHistory = JSON.parse(localStorage.getItem("cities"));
@@ -92,7 +93,98 @@ function searchCity() {
         })
 }
 
+function createCurrentWeatherCard(data) {
+    // use dayjs to grab and format date
+    const date = dayjs().format("M/DD/YYYY");
+
+    const card = $("<div>").addClass("card col-12");
+    const cardHeader = $("<h2>")
+        .addClass("card-header fw-bold")
+        .html(`${data.name} (${date})`);
+    const cardBody = $("<div>")
+        .addClass("card-body");
+    const temp = $("<p>")
+        .addClass("card-text")
+        .html(`Temp: ${data.main.temp}°F`);
+    const wind = $("<p>")
+        .addClass("card-text")
+        .html(`Wind: ${data.wind.speed} MPH`);
+    const humidity = $("<p>")
+        .addClass("card-text")
+        .html(`Humidity: ${data.main.humidity}%`);
+
+    cardBody.append(temp, wind, humidity);
+    card.append(cardHeader, cardBody);
+
+    weather.prepend(card);
+}
+
+function createForecastCard(data, i) {
+    // use dayjs to grab and format date
+    const date = dayjs(data.list[i].dt_txt).format("M/DD/YYYY");
+
+    // create cards using information from the fetch response
+    const card = $("<div>").addClass("card col-lg-2 col-md-5 col-sm-12 text-white bg-dark my-1 me-3");
+    const cardBody = $("<div>")
+        .addClass("card-body");
+    const cardTitle = $("<h5>")
+    .addClass("card-title")
+    .html(`${date}`);
+    const temp = $("<p>")
+        .addClass("card-text")
+        .html(`Temp: ${data.list[i].main.temp}°F`);
+    const wind = $("<p>")
+        .addClass("card-text")
+        .html(`Wind: ${data.list[i].wind.speed} MPH`);
+    const humidity = $("<p>")
+        .addClass("card-text")
+        .html(`Humidity: ${data.list[i].main.humidity}%`);
+
+    cardBody.append(cardTitle, temp, wind, humidity);
+    card.append(cardBody);
+
+    return card;
+}
+
+function renderForecast(data) {
+    $("<h3>5 Day Forecast</h3>").addClass("my-4 fw-bold").insertBefore($("#forecast"));
+
+    // loops through response
+    for (let i=4; i <= data.cnt; i+=8) {
+        $("#forecast").append(createForecastCard(data, i));
+    }
+}
+
+function getWeather() {
+    // get the coordinates of the last searched city
+    let lat = searchHistory[searchHistory.length - 1].lat;
+    let lon = searchHistory[searchHistory.length - 1].lon;
+
+    const currentWeatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+    const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+
+    fetch(currentWeatherURL)
+        .then(function(response) {
+            return response.json()
+        })
+        .then(function(data) {
+            createCurrentWeatherCard(data);
+        })
+
+    fetch(forecastURL)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log(data);
+            renderForecast(data);
+        })
+}
+
 $(document).ready(function () {
     searchBtn.on("click", searchCity);
+
+    if (searchHistory) {
+        getWeather();
+    }
 })
-// const requestURl = `https://api.openweathermap.org/data/2.5/forecast?lat=4${lat}&lon=${lon}&appid=${apiKey}`;
