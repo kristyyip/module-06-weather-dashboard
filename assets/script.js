@@ -96,13 +96,15 @@ function searchCity() {
 function createCurrentWeatherCard(data) {
     // use dayjs to grab and format date
     const date = dayjs().format("M/DD/YYYY");
+    const weatherIconURL = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`
+    
 
     const card = $("<div>").addClass("card col-12");
     const cardHeader = $("<h2>")
         .addClass("card-header fw-bold")
         .html(`${data.name} (${date})`);
-    const cardBody = $("<div>")
-        .addClass("card-body");
+    const weatherIcon = $("<img>").attr("src", weatherIconURL)
+    const cardBody = $("<div>").addClass("card-body");
     const temp = $("<p>")
         .addClass("card-text")
         .html(`Temp: ${data.main.temp}°F`);
@@ -114,6 +116,7 @@ function createCurrentWeatherCard(data) {
         .html(`Humidity: ${data.main.humidity}%`);
 
     cardBody.append(temp, wind, humidity);
+    cardHeader.append(weatherIcon)
     card.append(cardHeader, cardBody);
 
     weather.prepend(card);
@@ -122,14 +125,17 @@ function createCurrentWeatherCard(data) {
 function createForecastCard(data, i) {
     // use dayjs to grab and format date
     const date = dayjs(data.list[i].dt_txt).format("M/DD/YYYY");
+    const weatherIconURL = `http://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png`
 
     // create cards using information from the fetch response
     const card = $("<div>").addClass("card col-lg-2 col-md-5 col-sm-12 text-white bg-dark my-1 me-3");
-    const cardBody = $("<div>")
-        .addClass("card-body");
+    const cardBody = $("<div>").addClass("card-body");
     const cardTitle = $("<h5>")
-    .addClass("card-title")
-    .html(`${date}`);
+        .addClass("card-title")
+        .html(`${date}`);
+    const weatherIcon = $("<img>")
+        .addClass("card-text")
+        .attr("src", weatherIconURL);
     const temp = $("<p>")
         .addClass("card-text")
         .html(`Temp: ${data.list[i].main.temp}°F`);
@@ -140,7 +146,7 @@ function createForecastCard(data, i) {
         .addClass("card-text")
         .html(`Humidity: ${data.list[i].main.humidity}%`);
 
-    cardBody.append(cardTitle, temp, wind, humidity);
+    cardBody.append(cardTitle, weatherIcon, temp, wind, humidity);
     card.append(cardBody);
 
     return card;
@@ -168,6 +174,7 @@ function getWeather() {
             return response.json()
         })
         .then(function(data) {
+            console.log(data);
             createCurrentWeatherCard(data);
         })
 
