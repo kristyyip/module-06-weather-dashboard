@@ -202,7 +202,7 @@ function selectCity(event) {
 function searchCity() {
     // use geocoding api to get coordinates by location name
     // src: https://openweathermap.org/api/geocoding-api#direct_name
-    const requestURL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityInput.val()}&limit=5&appid=${apiKey}`
+    const requestURL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput.val()}&limit=5&appid=${apiKey}`
     
     
     fetch(requestURL)
@@ -247,7 +247,10 @@ function searchCity() {
 // when the page loads, render weather information and recently viewed if they exists + add event listeners to search and select cities
 $(document).ready(function () {
     // search for city and display results on click
-    searchBtn.on("click", searchCity);
+    // don't allow a user to submit an empty input
+    if (cityInput.val() !== "") {
+        searchBtn.on("click", searchCity);
+    }
 
     // when city is clicked in either search results or recently viewed, show weather information for that city
     $(".list-group").on("click", ".list-group-item", selectCity);
