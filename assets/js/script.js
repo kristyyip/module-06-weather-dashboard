@@ -141,7 +141,6 @@ function getWeather() {
             return response.json()
         })
         .then(function(data) {
-            console.log(data);
             createCurrentWeatherCard(data);
         })
 
@@ -151,7 +150,6 @@ function getWeather() {
             return response.json();
         })
         .then(function(data) {
-            console.log(data);
             renderForecast(data);
         })
 }
