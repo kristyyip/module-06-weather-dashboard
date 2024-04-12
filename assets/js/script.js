@@ -1,9 +1,10 @@
 // grab references to the important DOM elements
 const cityInput = $("#city");
+const message = $("#msg");
 const searchBtn = $("button");
 const searchResults = $("#search-results");
-const recentlyViewed = $("#recently-viewed")
-const weather = $("section")
+const recentlyViewed = $("#recently-viewed");
+const weather = $("section");
 
 // api key for open weather map
 const apiKey = "3c52839213dc657264686d60db3357ec";
@@ -24,7 +25,7 @@ function removeSearchResults() {
 }
 
 // removes weather information from dashboard
-function removeCards() {
+function removeWeatherInfo() {
     $(".card").remove();
     $("h3").remove();
 }
@@ -51,7 +52,7 @@ function createCurrentWeatherCard(data) {
     const date = dayjs().format("M/DD/YYYY");
 
     // url for weather icon
-    const weatherIconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`
+    const weatherIconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`;
     
     // create card elements using information from fetch response
     const card = $("<div>").addClass("card col-12");
@@ -72,7 +73,7 @@ function createCurrentWeatherCard(data) {
 
     // append card elements to appropriate parent
     cardBody.append(temp, wind, humidity);
-    cardHeader.append(weatherIcon)
+    cardHeader.append(weatherIcon);
     card.append(cardHeader, cardBody);
 
     // insert card as first child element of weather section
@@ -83,7 +84,7 @@ function createCurrentWeatherCard(data) {
 function createForecastCard(data, i) {
     // use dayjs to grab and format date
     const date = dayjs(data.list[i].dt_txt).format("M/DD/YYYY");
-    const weatherIconURL = `http://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png`
+    const weatherIconURL = `http://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png`;
 
     // create card elements using information from the fetch response
     const card = $("<div>").addClass("card col-lg-2 col-md-5 col-sm-12 text-white bg-dark my-1 me-3");
@@ -133,12 +134,12 @@ function getWeather() {
     const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
 
     // removes any existing weather information
-    removeCards();
+    removeWeatherInfo();
 
     // fetch current weather api
     fetch(currentWeatherURL)
         .then(function(response) {
-            return response.json()
+            return response.json();
         })
         .then(function(data) {
             createCurrentWeatherCard(data);
@@ -157,16 +158,16 @@ function getWeather() {
 // select city from search results or recently viewed and push coordinates to searchHistory array + save to local storage
 function selectCity(event) {
     // retrieve name and coordinates from data attribute of clicked city
-    let name = event.target.dataset.name
-    let lat = event.target.dataset.lat
-    let lon = event.target.dataset.lon
+    let name = event.target.dataset.name;
+    let lat = event.target.dataset.lat;
+    let lon = event.target.dataset.lon;
 
     // create object of city
     const cityObj = {
         name: name,
         lat: lat,
         lon: lon
-    }
+    };
 
     // // if no cities were retrieved from localStorage, assign cities to a new empty array to push to later
     if (!searchHistory) {
@@ -202,12 +203,17 @@ function selectCity(event) {
 function searchCity() {
     // use geocoding api to get coordinates by location name
     // src: https://openweathermap.org/api/geocoding-api#direct_name
-    const requestURL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput.val()}&limit=5&appid=${apiKey}`
+    const requestURL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput.val()}&limit=5&appid=${apiKey}`;
     
     
     fetch(requestURL)
         .then(function (response) {
-            return response.json()
+            if (!response.ok) {
+                message.html("Invalid input. Please enter a city.");
+            } else {
+                message.html("");
+            return response.json();
+            }
         })
         .then(function (data) {
             removeSearchResults();
@@ -216,16 +222,16 @@ function searchCity() {
             if (data.length === 0) {
                 $("<h6>No results found. Please try again.</h6>")
                     .insertAfter("form")
-                    .addClass("fw-bold mt-4")
+                    .addClass("fw-bold mt-4");
             // otherwise show search results header
             } else {
                 $("<h6>Search results (please select one):</h6>")
                     .insertAfter("form")
-                    .addClass("fw-bold mt-4")
+                    .addClass("fw-bold mt-4");
             }
 
             // create border underneath search results for styling
-            searchResults.addClass("border-bottom border-2")
+            searchResults.addClass("border-bottom border-2");
 
             // loops through data and creates a list group item of results to append and show on screen
             for (let i=0; i < data.length; i++) {
