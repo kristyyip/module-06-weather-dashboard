@@ -51,7 +51,7 @@ function createCurrentWeatherCard(data) {
     const date = dayjs().format("M/DD/YYYY");
 
     // url for weather icon
-    const weatherIconURL = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`
+    const weatherIconURL = `https://openweathermap.org/img/w/${data.weather[0].icon}.png`
     
     // create card elements using information from fetch response
     const card = $("<div>").addClass("card col-12");
@@ -248,9 +248,7 @@ function searchCity() {
 $(document).ready(function () {
     // search for city and display results on click
     // don't allow a user to submit an empty input
-    if (cityInput.val() !== "") {
-        searchBtn.on("click", searchCity);
-    }
+    searchBtn.on("click", searchCity);
 
     // when city is clicked in either search results or recently viewed, show weather information for that city
     $(".list-group").on("click", ".list-group-item", selectCity);
